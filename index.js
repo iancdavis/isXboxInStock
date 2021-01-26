@@ -1,4 +1,5 @@
 const puppeteer = require('puppeteer')
+const CronJob = require('cron').CronJob
 
 
 const url_bestbuy = 'https://www.bestbuy.com/site/microsoft-xbox-series-x-1tb-console-black/6428324.p?skuId=6428324'
@@ -38,9 +39,20 @@ async function checkStock(page) {
    
 }
 
-async function monitor() {
-    let page = await configureBrowser()
-    await checkStock(page)
+async function startTracking() {
+    const page = await configureBrowser()
+
+    let job = new CronJob('*/60 * * * * *', function () {
+        checkStock(page)
+    }, null, true, null, null, true)
+    job.start()
 }
 
-monitor()
+startTracking()
+
+// async function monitor() {
+//     let page = await configureBrowser()
+//     await checkStock(page)
+// }
+
+// monitor()
